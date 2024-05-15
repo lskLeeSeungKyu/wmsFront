@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://10.101.52.96:8090'; 
+axios.defaults.baseURL = 'http://39.115.244.28:8090'; 
 axios.defaults.withCredentials = true; //자격증명정보 (쿠키교환 가능 (jsessionid)) <CSR>
 
 // const instance = axios.create({
-//     baseURL: 'http://10.101.52.96:8090',
+//     baseURL: 'http://39.115.244.28:8090',
 //     //process.env.VUE_APP_API_URL
 // });
 
@@ -15,7 +15,7 @@ export const actions = {
     doSearch: async (context, data) => {
         context.commit('isLoading');
         //let result = await instance.post('selectInbOrder', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectInbOrder', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectInbOrder', data);
         context.commit('dataSet', result.data);
         context.commit('isLoading');
     },
@@ -24,25 +24,44 @@ export const actions = {
     userSearch: async (context, data) => {
         context.commit('isLoading');
         //let result = await instance.post('selectUser', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectUser', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectUser', data);
         context.commit('userDataSet', result.data);
         context.commit('isLoading');
     },
 
 
     loginHandler: async (context, data) => {
+        let multiLogin = false;
+
         context.commit('isLoading');
         //let result = await instance.post('login.wms', data);
-        let result = await axios.post('http://10.101.52.96:8090/login.wms', data);
+        let result = await axios.post('http://39.115.244.28:8090/login.wms', data);
         context.commit('isLoading');
+
         if(result.data === '') {
             //실패
             return 'fail';
         }
-        context.commit('isLogin');
-        context.commit('sessionSet', result.data); //세션 상태관리
 
-        const socket = await new WebSocket('ws://10.101.52.96:8090/websocket-endpoint');
+        if(result.data['name'] === '중복') {
+            if(confirm('이미 로그인되어 있습니다. 기존 접속을 끊으시겠습니까?')) {
+
+                const multiResult = await axios.post('http://39.115.244.28:8090/multiLogin.wms', data);
+                context.commit('sessionSet', multiResult.data);
+
+                multiLogin = true;
+            } else {
+                return 'cancel';
+            }
+        }
+
+        context.commit('isLogin');
+
+        if(multiLogin === false) {
+            context.commit('sessionSet', result.data); //세션 상태관리
+        }
+
+        const socket = await new WebSocket('ws://39.115.244.28:8090/websocket-endpoint');
 
         socket.onopen = function() {    
             
@@ -56,6 +75,14 @@ export const actions = {
          */
         socket.onmessage = function(event) {
             
+            if(event.data === 'multiLogin') {
+
+                alert('동일한 아이디로 로그인 되었습니다. 로그아웃 됩니다.');
+
+                context.commit('isLogout', {});
+                location.href = '/';
+            }
+            
             if(event.data.indexOf(':') == -1) {
 
                 let userList = event.data.substring(1);
@@ -65,6 +92,9 @@ export const actions = {
             }
             else {
                 context.commit('chatMessagePush', event.data);
+
+                context.commit('btnShowFlag');
+                
             }
             
           };
@@ -74,7 +104,7 @@ export const actions = {
 
     logoutHandler: async context => {
         //await instance.post('logout.wms');
-        await axios.post('http://10.101.52.96:8090/logout.wms');
+        await axios.post('http://39.115.244.28:8090/logout.wms');
         context.commit('isLogout', {});
     },
 
@@ -82,7 +112,7 @@ export const actions = {
     userModify: async (context, data) => {
         context.commit('isLoading');
         //let result = await instance.post('userModify', data)
-        let result = await axios.post('http://10.101.52.96:8090/userModify', data);
+        let result = await axios.post('http://39.115.244.28:8090/userModify', data);
         context.commit('isLoading');
         
         if(result.data.result === 'success') {
@@ -99,9 +129,9 @@ export const actions = {
     userGenerate: async(context, data) => {
         context.commit('isLoading');
         //let result = await instance.post('userGenerate', data);
-        let result = await axios.post('http://10.101.52.96:8090/userGenerate', data);
+        let result = await axios.post('http://39.115.244.28:8090/userGenerate', data);
         //let result2 = await instance.post('selectUser', data);
-        let result2 = await axios.post('http://10.101.52.96:8090/selectUser', data);
+        let result2 = await axios.post('http://39.115.244.28:8090/selectUser', data);
         context.commit('userDataSet', result2.data);
         context.commit('isLoading');
 
@@ -115,7 +145,7 @@ export const actions = {
     userDelete: async(context, data) => {
         context.commit('isLoading');
         //let result = await instance.post('userDelete', data);
-        let result = await axios.post('http://10.101.52.96:8090/userDelete', data);
+        let result = await axios.post('http://39.115.244.28:8090/userDelete', data);
         context.commit('isLoading');
 
         if(result.data.result === 'fail') {
@@ -128,7 +158,7 @@ export const actions = {
     sessionInfo: async context => {
         context.commit('isLoading');
         //let result = await instance.post('sessionInfo');
-        let result = await axios.post('http://10.101.52.96:8090/sessionInfo');
+        let result = await axios.post('http://39.115.244.28:8090/sessionInfo');
         context.commit('isLoading');
         if(result.data !== '') {
           context.commit('sessionSet', result.data);
@@ -142,7 +172,7 @@ export const actions = {
     mainPageQuery: async (context, data) => {
         context.commit('isLoading');
         //let result = await instance.post('mainPageQuery', data);
-        let result = await axios.post('http://10.101.52.96:8090/mainPageQuery', data);
+        let result = await axios.post('http://39.115.244.28:8090/mainPageQuery', data);
         context.commit('isLoading');
         
         if(result.data['result'] === 'fail') {
@@ -157,7 +187,7 @@ export const actions = {
     selectUploadFile: async (context, data) => {
         context.commit('isLoading');
         //let result = await instance.post('selectUploadFile', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectUploadFile', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectUploadFile', data);
         context.commit('isLoading');
 
         return result.data;
@@ -166,7 +196,7 @@ export const actions = {
     selectInbOrderEntry: async (context, data) => {
         context.commit('isLoading');
         //const result = await instance.post('selectInbOrderEntry', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectInbOrderEntry', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectInbOrderEntry', data);
         context.commit('isLoading');
         context.commit('dataSet2', result.data);
     },
@@ -174,7 +204,7 @@ export const actions = {
     selectInbOrderEntryDetail: async (context, data) => {
         context.commit('isLoading');
         //const result = await instance.post('selectInbOrderEntryDetail', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectInbOrderEntryDetail', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectInbOrderEntryDetail', data);
         context.commit('isLoading');
         context.commit('dataSet3', result.data);
     },
@@ -183,14 +213,14 @@ export const actions = {
     insertUploadFile: async (context, data) => {
         context.commit('isLoading');
         //await instance.post('insertUploadFile', data);
-        await axios.post('http://10.101.52.96:8090/insertUploadFile', data);
+        await axios.post('http://39.115.244.28:8090/insertUploadFile', data);
         context.commit('isLoading');
     },
 
     inbGenerateU: async (context, data) => {
         context.commit('isLoading');
         //const result = await instance.post('inbGenerateU', data);
-        let result = await axios.post('http://10.101.52.96:8090/inbGenerateU', data);
+        let result = await axios.post('http://39.115.244.28:8090/inbGenerateU', data);
         context.commit('isLoading');
 
         return result.data
@@ -199,14 +229,14 @@ export const actions = {
     doInbEntry: async (context, data) => {
         context.commit('isLoading');
         //await instance.post('inbGenerateMD', data);
-        await axios.post('http://10.101.52.96:8090/inbGenerateMD', data);
+        await axios.post('http://39.115.244.28:8090/inbGenerateMD', data);
         context.commit('isLoading');
     },
     
     selectInbInspection: async (context, data) => {
         context.commit('isLoading');
         //const result = await instance.post('selectInbInspection', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectInbInspection', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectInbInspection', data);
         context.commit('isLoading');
         context.commit('InbInspectionDataSet', result.data);
     },
@@ -214,7 +244,7 @@ export const actions = {
     selectInbInspectionDetail: async (context, data) => {
         context.commit('isLoading');
         //const result = await instance.post('selectInbInspectionDetail', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectInbInspectionDetail', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectInbInspectionDetail', data);
         context.commit('isLoading');
         context.commit('InbInspectionDetailDataSet', result.data);
     },
@@ -222,28 +252,28 @@ export const actions = {
     inbInspection: async (context, data) => {
         context.commit('isLoading');
         //await instance.post('inbInspection', data);
-        await axios.post('http://10.101.52.96:8090/inbInspection', data);
+        await axios.post('http://39.115.244.28:8090/inbInspection', data);
         context.commit('isLoading');
     },
 
     inbInspectionCancel: async (context, data) => {
         context.commit('isLoading');
         //await instance.post('inbInspectionCancel', data);
-        await axios.post('http://10.101.52.96:8090/inbInspectionCancel', data);
+        await axios.post('http://39.115.244.28:8090/inbInspectionCancel', data);
         context.commit('isLoading');
     },
     
     inbConfirm: async (context, data) => {
         context.commit('isLoading');
         //await instance.post('inbConfirm', data);
-        await axios.post('http://10.101.52.96:8090/inbConfirm', data);
+        await axios.post('http://39.115.244.28:8090/inbConfirm', data);
         context.commit('isLoading');
     },
 
     selectInbConfirmValid: async (context, data) => {
         context.commit('isLoading');
         //const result = await instance.post('selectInbConfirmValid', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectInbConfirmValid', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectInbConfirmValid', data);
         context.commit('isLoading');
         
         return result.data;
@@ -252,7 +282,7 @@ export const actions = {
     selectStock: async (context, data) => {
         context.commit('isLoading');
         //const result = await instance.post('selectStock', data);
-        let result = await axios.post('http://10.101.52.96:8090/selectStock', data);
+        let result = await axios.post('http://39.115.244.28:8090/selectStock', data);
         context.commit('isLoading');
         
         context.commit('stockDataSet', result.data);

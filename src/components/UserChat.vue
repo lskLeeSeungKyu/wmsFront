@@ -10,19 +10,20 @@
     </div>
   </transition>
 
+  <br>
+  
   <v-btn v-show="btnShow" style="background: black; color: white;" class="open-modal-button font-weight-bold" @click="modalOpen">실시간 공지</v-btn>
-
+  <span v-show="newMessageText" outlined class="new-message-text">새로운 공지가 있습니다.</span>
 </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
 
   data() {
     return {
       showModal: false,
-      btnShow: true,
 
       messageInput: '',
     };
@@ -50,18 +51,28 @@ export default {
 
     hideModal() {
       this.showModal = false;
-      this.btnShow = true;
+      this.$store.state.btnShow = true;
     },
 
     modalOpen() {
       this.showModal = true;
-      this.btnShow = false;
+      this.$store.state.btnShow = false;
+
+      this.$store.state.newMessageText = false;
 
       this.scrollToBottom();
     },
 
     ...mapActions(['reset']),
+
   },
+
+  computed: {
+    
+    ...mapGetters(['newMessageText', 'btnShow']),
+  }
+
+  
 
 };
 </script>
@@ -90,6 +101,18 @@ export default {
   bottom: 20px;
   right: 20px;
   z-index: 9999;
+}
+
+.new-message-text {
+  position: fixed;
+  bottom: 20px;
+  right: 155px;
+  z-index: 9999;
+
+  color: blue;
+  font-weight: bold;
+  font-size: 20px;
+  opacity: 0.6;
 }
 
 /* 모달 애니메이션 효과 */

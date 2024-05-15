@@ -29,6 +29,12 @@ export const getters = {
     isLoading(state) {
         return state.isLoading;
     },
+    newMessageText(state) {
+        return state.newMessageText;
+    },
+    btnShow(state) {
+        return state.btnShow;
+    },
     userModal(state) {
         return state.userModal;
     },

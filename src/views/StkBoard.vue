@@ -53,6 +53,7 @@
     <v-col>
       <v-btn @click="doReset" class="font-weight-bold" style="float: right;">초기화</v-btn>
       <v-btn @click="excelDownload" class="font-weight-bold" style="float: right; background-color: green; color: white;">다운로드</v-btn>
+      <v-btn @click="doPrint" class="font-weight-bold" style="float: right; background-color: black; color: white;">출력</v-btn>
       <v-btn @click="selectStock({ ORDER_DATE: ORDER_DATE.replaceAll('-', '') })" class="font-weight-bold" style="float: right;">조회</v-btn> 
     </v-col>
     </v-row>

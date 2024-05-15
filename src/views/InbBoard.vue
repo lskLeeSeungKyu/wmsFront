@@ -65,6 +65,7 @@
     <v-col>
       <v-btn @click="doReset" class="font-weight-bold" style="float: right;">초기화</v-btn>
       <v-btn @click="excelDownload" class="font-weight-bold" style="float: right; background-color: green; color: white;">액셀양식</v-btn>
+      <v-btn @click="doPrint" class="font-weight-bold" style="float: right; background-color: black; color: white;">출력</v-btn>
       <v-btn @click="doUpload" class="font-weight-bold" style="float: right; background-color: black; color: white;">업로드</v-btn>
       <v-btn @click="doGenerate" class="font-weight-bold" style="float: right; background-color: red; color: white;">생성</v-btn>
       <v-btn @click="doSearchValid" class="font-weight-bold" style="float: right;">조회</v-btn> 

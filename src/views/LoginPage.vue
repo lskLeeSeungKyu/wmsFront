@@ -68,6 +68,9 @@ export default {
         this.danger = true;
         return;
       }
+      else if (result === 'cancel') {
+        return;
+      }
       this.$router.push('/MainPage');
     },
 

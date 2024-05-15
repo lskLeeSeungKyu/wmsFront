@@ -15,6 +15,9 @@ export const state = {
     isLogin: false,
     isLoading: false,
 
+    newMessageText: false,
+    btnShow: true,
+
     userModal: false,
     uploadModal: false,
 

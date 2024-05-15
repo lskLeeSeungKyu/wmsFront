@@ -44,6 +44,11 @@ export const mutations = {
     loginUserSet: (state, payload) => {
         state.loginUser = payload;
     },
+    btnShowFlag: state => {
+         if(state.btnShow === true) {
+            state.newMessageText = true;
+         }
+    },
     chatMessagePush: (state, payload) => {
         state.chat.push(payload);
     },
