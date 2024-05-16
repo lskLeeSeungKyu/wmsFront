@@ -345,6 +345,19 @@ excelExport(data, options) {
       
     },
 
+    doPrint() {
+      try {
+
+        let date = this.ORDER_DATE.replaceAll('-', '');
+        let file = this.FILE_NM;
+
+        window.open(`http://10.101.52.96:8090/inbOrderPrint/${date}/${file}`);
+
+      } catch(error) {
+          alert(`에러발생 : ${error}`);
+      }
+    },
+
     chooseFile (event, { item } ) {
       this.FILE_NM = item['FILE_NM'];
       this.isModal = false;
