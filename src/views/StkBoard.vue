@@ -252,6 +252,19 @@ excelExport(data, options) {
       this.ORDER_DATE = new Date().toISOString().substr(0, 10);
       this.CUST_CD = '';
     },
+
+    doPrint() {
+      try {
+
+        let date = this.ORDER_DATE.replaceAll('-', '');
+        let file = '';
+
+        window.open(`http://39.115.244.28:8090/stockPrint/${date}/${file}`);
+
+      } catch(error) {
+          alert(`에러발생 : ${error}`);
+      }
+    },
   },
 
   computed: {
