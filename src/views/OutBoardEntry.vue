@@ -52,7 +52,7 @@
                   style="margin-top: 34px;" 
                   show-select
                   :single-select="singleSelect"
-                  :items="grid_inbEntry"
+                  :items="grid_outEntry"
                   :hide-default-footer="true"
                   item-key="ORDER_NO_CUST"
                   no-data-text="조회된 데이터가 없습니다."
@@ -64,7 +64,7 @@
 
     <v-data-table :headers="headers2"
                   style="margin-top: 150px;" 
-                  :items="grid_inbEntryDetail"
+                  :items="grid_outEntryDetail"
                   no-data-text="조회된 데이터가 없습니다."
                   :items-per-page="viewCount"
                   :footer-props="{
@@ -126,12 +126,12 @@ export default ({
   },
 
   methods: {
-    ...mapActions(['selectInbOrderEntry', 'selectInbOrderEntryDetail', 'sessionInfo', 'doInbEntry']),
+    ...mapActions(['selectOutOrderEntry', 'selectOutOrderEntryDetail', 'sessionInfo', 'doOutEntry', 'doOutEntryValid']),
 
     async doSearchDetail(event, { item } ) {
       const data = { ORDER_NO_CUST: item['ORDER_NO_CUST'] };
 
-      await this.selectInbOrderEntryDetail(data);
+      await this.selectOutOrderEntryDetail(data);
     },
 
     async doEntry(selectedItems) {
@@ -150,19 +150,32 @@ export default ({
 
       if(confirm('등록 하시겠습니까?')) {
 
-        await this.doInbEntry(selectedItems);
+        const result = await this.doOutEntryValid(selectedItems);
+
+        if(result === 'success') {
+          await this.doOutEntry(selectedItems);
       
-      for(const item of this.$store.state.grid_inbEntry) {
+          for(const item of this.$store.state.grid_outEntry) {
 
-        for(const item2 of selectedItems) {
+            for(const item2 of selectedItems) {
 
-          if(item2['ORDER_NO_CUST'] === item['ORDER_NO_CUST']) {
-            item['ENTRY_YN'] = '등록';
-            console.log(item2);
+            if(item2['ORDER_NO_CUST'] === item['ORDER_NO_CUST']) {
+              item['ENTRY_YN'] = '등록';
+              console.log(item2);
+            }
+            }
+        
           }
         }
+
+        else if(result === 'fail') {
+          alert('현 재고에 가용재고가 부족하거나 존재하지 않는 상품이 있습니다.');
+        }
+
+        else {
+          alert('DB에러');
+        }
         
-      }
       }
       
     },
@@ -170,7 +183,7 @@ export default ({
     async doSearchValid() {
 
       if(this.ORDER_DATE === '') {
-        alert("입고예정일자는 필수입니다.");
+        alert("출고예정일자는 필수입니다.");
         return;
       }
 
@@ -179,21 +192,21 @@ export default ({
         CUST_CD: this.CUST_CD, 
       };
 
-      await this.selectInbOrderEntry(data);
+      await this.selectOutOrderEntry(data);
 
-      this.$store.state.grid_inbEntryDetail = [];
+      this.$store.state.grid_outEntryDetail = [];
     },
 
     doReset() {
-      this.$store.state.grid_inbEntry = [];
-      this.$store.state.grid_inbEntryDetail = [];
+      this.$store.state.grid_outEntry = [];
+      this.$store.state.grid_outEntryDetail = [];
       this.ORDER_DATE = new Date().toISOString().substr(0, 10);
       this.CUST_CD = '';
     },
   },
 
   computed: {
-    ...mapGetters(['grid_inbEntry', 'grid_inbEntryDetail']),
+    ...mapGetters(['grid_outEntry', 'grid_outEntryDetail']),
   }
 })
 </script>

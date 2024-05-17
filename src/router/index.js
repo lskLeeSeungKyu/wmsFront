@@ -30,6 +30,24 @@ export const router = new VueRouter({
             component: () => import('@/views/InbBoardInspection.vue'),
         },
         {
+            //출고예정
+            path: '/OutOrder',
+            name: 'OutOrder',
+            component: () => import('@/views/OutBoard.vue'),
+        },
+        {
+            //출고등록
+            path: '/OutEntry',
+            name: 'OutEntry',
+            component: () => import('@/views/OutBoardEntry.vue'),
+        },
+        {
+            //출고검수
+            path: '/OutInspection',
+            name: 'OutInspection',
+            component: () => import('@/views/OutBoardInspection.vue'),
+        },
+        {
             //현재고관리
             path: '/StkBoard',
             name: 'StkBoard',
@@ -54,9 +72,9 @@ export const router = new VueRouter({
             component: () => import('@/views/UserGenerate.vue'),
         },
         {
-            //없는 페이지 접근
+            //404
             path: '*',
-            component: () => import('@/views/UserGenerate.vue'), //에러페이지 설정하면 됨.
+            component: () => import('@/views/NotFoundPage.vue'),
         }
     ]
 });

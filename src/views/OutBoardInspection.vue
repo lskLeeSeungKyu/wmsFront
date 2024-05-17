@@ -8,7 +8,7 @@
           ref="scan"
           v-model="barcodeScan"
           label="바코드 스캔"
-          hint="작업번호 스캔 후 상품코드를 스캔하세요."
+          hint="작업번호 스캔 후 상품코드를 스캔하세요"
           style="font-size: 30px;"
           @keyup.enter="doSearchValid"
         ></v-text-field>
@@ -29,7 +29,7 @@
 
     <v-data-table :headers="headers1"
                   style="margin-top: 34px;" 
-                  :items="grid_inbInspection"
+                  :items="grid_outInspection"
                   show-select
                   :single-select="true"
                   item-key="TRANS_NO"
@@ -46,7 +46,7 @@
                   show-select
                   :single-select="singleSelect"
                   item-key="LINE_NO"
-                  :items="grid_inbInspectionDetail"
+                  :items="grid_outInspectionDetail"
                   no-data-text="조회된 데이터가 없습니다."
                   :items-per-page="viewCount"
                   v-model="selectedItemsD"
@@ -116,21 +116,21 @@ export default ({
   },
 
   methods: {
-    ...mapActions(['selectInbInspection', 
-                   'selectInbInspectionDetail', 
+    ...mapActions(['selectOutInspection', 
+                   'selectOutInspectionDetail', 
                    'sessionInfo', 
-                   'doInbEntry', 
-                   'inbInspection', 
-                   'inbInspectionCancel', 
-                   'inbConfirm', 
-                   'selectInbConfirmValid',]),
+                   'doOutEntry', 
+                   'outInspection', 
+                   'outInspectionCancel', 
+                   'outConfirm', 
+                   'selectOutConfirmValid',]),
 
 
     async doSearchDetail(event, { item } ) {
-
+      
       const data = { TRANS_NO: item['TRANS_NO'] };
 
-      await this.selectInbInspectionDetail(data);
+      await this.selectOutInspectionDetail(data);
 
       this.barcodeScan = '';
       this.$refs.scan.focus();
@@ -151,13 +151,13 @@ export default ({
       }
 
       if(confirm("검수완료 하시겠습니까?")) {
-        await this.inbInspection(this.selectedItemsD);
+        await this.outInspection(this.selectedItemsD);
 
-       for(var i=0; i<this.$store.state.grid_inbInspectionDetail.length; i++) {
+       for(var i=0; i<this.$store.state.grid_outInspectionDetail.length; i++) {
         for(var j=0; j<this.selectedItemsD.length; j++) {
 
-          if(this.$store.state.grid_inbInspectionDetail[i]['LINE_NO'] === this.selectedItemsD[j]['LINE_NO']) {
-            this.$store.state.grid_inbInspectionDetail[i]['INSPECTION_YN'] = 'Y';
+          if(this.$store.state.grid_outInspectionDetail[i]['LINE_NO'] === this.selectedItemsD[j]['LINE_NO']) {
+            this.$store.state.grid_outInspectionDetail[i]['INSPECTION_YN'] = 'Y';
           }
         }
       }
@@ -179,7 +179,7 @@ export default ({
         }
       }
 
-      for(const item of this.$store.state.grid_inbInspection) {
+      for(const item of this.$store.state.grid_outInspection) {
         if(item['TRANS_NO'] === this.selectedItemsD[0]['TRANS_NO'] && item['CONFIRM_YN'] === '확정') {
           alert("이미 확정된 주문입니다.");
           return;
@@ -187,14 +187,14 @@ export default ({
       }
 
       if(confirm("검수취소 하시겠습니까?")) {
-        await this.inbInspectionCancel(this.selectedItemsD);
+        await this.outInspectionCancel(this.selectedItemsD);
       
-        for(var i=0; i<this.$store.state.grid_inbInspectionDetail.length; i++) {
+        for(var i=0; i<this.$store.state.grid_outInspectionDetail.length; i++) {
          for(var j=0; j<this.selectedItemsD.length; j++) {
 
-          if(this.$store.state.grid_inbInspectionDetail[i]['LINE_NO'] === this.selectedItemsD[j]['LINE_NO']) {
-            this.$store.state.grid_inbInspectionDetail[i]['INSPECTION_YN'] = 'N';
-            this.$store.state.grid_inbInspectionDetail[i]['SCAN_QTY'] = '0';
+          if(this.$store.state.grid_outInspectionDetail[i]['LINE_NO'] === this.selectedItemsD[j]['LINE_NO']) {
+            this.$store.state.grid_outInspectionDetail[i]['INSPECTION_YN'] = 'N';
+            this.$store.state.grid_outInspectionDetail[i]['SCAN_QTY'] = '0';
           }
         }
       }
@@ -215,7 +215,7 @@ export default ({
 
       if(confirm("확정하시겠습니까?")) {
 
-        const result = await this.selectInbConfirmValid({ TRANS_NO: this.selectedItemsM[0]['TRANS_NO'] });
+        const result = await this.selectOutConfirmValid({ TRANS_NO: this.selectedItemsM[0]['TRANS_NO'] });
         
         for(const item of result) {
           if(item['INSPECTION_YN'] === 'N') {
@@ -224,13 +224,13 @@ export default ({
           }
         }
 
-        await this.inbConfirm({ TRANS_NO: this.selectedItemsM[0]['TRANS_NO'] });
+        await this.outConfirm({ TRANS_NO: this.selectedItemsM[0]['TRANS_NO'] });
 
-        for(let i=0; i<this.$store.state.grid_inbInspection.length; i++) {
+        for(let i=0; i<this.$store.state.grid_outInspection.length; i++) {
           
-          if(this.$store.state.grid_inbInspection[i]['TRANS_NO'] === this.selectedItemsM[0]['TRANS_NO']) {
+          if(this.$store.state.grid_outInspection[i]['TRANS_NO'] === this.selectedItemsM[0]['TRANS_NO']) {
 
-            this.$store.state.grid_inbInspection[i]['CONFIRM_YN'] = '확정';
+            this.$store.state.grid_outInspection[i]['CONFIRM_YN'] = '확정';
           }
         }
       }
@@ -246,25 +246,25 @@ export default ({
 
       const data = {};
 
-      if(this.barcodeScan.startsWith('E90')) {
+      if(this.barcodeScan.startsWith('O90')) {
         data['TRANS_NO'] = this.barcodeScan;
 
-        await this.selectInbInspection(data);
+        await this.selectOutInspection(data);
 
-        this.$store.state.grid_inbInspectionDetail = [];
+        this.$store.state.grid_outInspectionDetail = [];
       }
 
       else {
-        if(this.$store.state.grid_inbInspection.length === 0) {
+        if(this.$store.state.grid_outInspection.length === 0) {
           alert("작업번호를 먼저 스캔하세요.");
           return;
         }
-        else if(this.$store.state.grid_inbInspection.length === 1 && this.$store.state.grid_inbInspectionDetail.length === 0) {
+        else if(this.$store.state.grid_outInspection.length === 1 && this.$store.state.grid_outInspectionDetail.length === 0) {
           alert("상품정보를 먼저 조회하세요.");
           return;
         }
 
-        for(const item of this.$store.state.grid_inbInspectionDetail) {
+        for(const item of this.$store.state.grid_outInspectionDetail) {
           if(item['ITEM_CD'] === this.barcodeScan) {
 
             if(Number(item['ORDER_QTY']) === Number(item['SCAN_QTY'])) {
@@ -294,9 +294,9 @@ export default ({
 
     async scanInspection() {
 
-      await this.inbInspection(this.scanInspectionItem);
+      await this.outInspection(this.scanInspectionItem);
 
-      for(const item of this.$store.state.grid_inbInspectionDetail) {
+      for(const item of this.$store.state.grid_outInspectionDetail) {
 
         if(Number(item['LINE_NO']) === Number(this.scanInspectionItem[0]['LINE_NO'])) {
           item['INSPECTION_YN'] = 'Y';
@@ -308,15 +308,15 @@ export default ({
     },
 
     doReset() {
-      this.$store.state.grid_inbInspection = [];
-      this.$store.state.grid_inbInspectionDetail = [];
+      this.$store.state.grid_outInspection = [];
+      this.$store.state.grid_outInspectionDetail = [];
       this.barcodeScan = '';
       this.$refs.scan.focus();
     },
   },
 
   computed: {
-    ...mapGetters(['grid_inbInspection', 'grid_inbInspectionDetail']),
+    ...mapGetters(['grid_outInspection', 'grid_outInspectionDetail']),
   }
 })
 </script>

@@ -84,15 +84,15 @@ export default {
           subItems: [
             {
               title: '출고예정',
-              to: '/xxx'
-            },
-            {
-              title: '출고검수',
-              to: '/xxx'
+              to: '/OutOrder'
             },
             {
               title: '출고등록',
-              to: '/xxx'
+              to: '/OutEntry'
+            },
+            {
+              title: '출고검수',
+              to: '/OutInspection'
             },
           ],
         },
@@ -105,10 +105,6 @@ export default {
             {
               title: '현재고관리',
               to: '/StkBoard'
-            },
-            {
-              title: '재고이동',
-              to: '/mainPage'
             },
           ],
         },

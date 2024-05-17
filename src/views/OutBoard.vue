@@ -26,7 +26,7 @@
           <v-text-field
             outlined
             v-model="ORDER_DATE"
-            label="입고예정일자"
+            label="출고예정일자"
             dense
             readonly
             v-on="on"
@@ -72,7 +72,7 @@
     </v-col>
     </v-row>
     <v-data-table :headers="headers"
-                  :items="grid_inbOrder"
+                  :items="grid_outOrder"
                   :search="search"
                   no-data-text="조회된 데이터가 없습니다."
                   :items-per-page="viewCount"
@@ -188,7 +188,7 @@ export default ({
   },
 
   methods: {
-    ...mapActions(['doSearch', 'sessionInfo', 'selectUploadFile', 'insertUploadFile', 'inbGenerateU']),
+    ...mapActions(['outOrderDoSearch', 'sessionInfo', 'selectUploadFileO', 'insertUploadFileO', 'outGenerateU']),
 
 excelDownload() {
   let options = {
@@ -264,31 +264,31 @@ excelExport(data, options) {
   let wb = XLSX.utils.book_new();
 
   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  XLSX.writeFile(wb, '입고예정업로드.xlsx');
+  XLSX.writeFile(wb, '출고예정업로드.xlsx');
 
 },
 
     async doGenerate() {
 
-      if(this.$store.state.grid_inbOrder.length === 0) {
+      if(this.$store.state.grid_outOrder.length === 0) {
         alert("업로드는 필수입니다.");
         return;
       }
 
-      if(this.$store.state.grid_inbOrder[0]['TRANS_STATUS_FILE'] === '생성완료') {
+      if(this.$store.state.grid_outOrder[0]['TRANS_STATUS_FILE'] === '생성완료') {
         alert("이미 생성되었습니다.");
         return;
       }
 
       const data = {
-        FILE_NM: this.$store.state.grid_inbOrder[0]['FILE_NM'],
-        ORDER_NO_CUST: this.$store.state.grid_inbOrder[0]['ORDER_NO_CUST'],
+        FILE_NM: this.$store.state.grid_outOrder[0]['FILE_NM'],
+        ORDER_NO_CUST: this.$store.state.grid_outOrder[0]['ORDER_NO_CUST'],
       }
 
-      await this.inbGenerateU(data);
+      await this.outGenerateU(data);
 
         
-      for(const item of this.$store.state.grid_inbOrder) {
+      for(const item of this.$store.state.grid_outOrder) {
           item['TRANS_STATUS_FILE'] = '생성완료';
         }
     },
@@ -306,7 +306,8 @@ excelExport(data, options) {
         CUST_CD: this.CUST_CD, 
         FILE_NM: this.FILE_NM,
       };
-      this.doSearch(data);
+
+      this.outOrderDoSearch(data);
     },
 
     closeModal() {
@@ -329,7 +330,7 @@ excelExport(data, options) {
       data['ORDER_DATE'] = data['ORDER_DATE'].replaceAll('-', '');
       this.modalItem = [];
 
-      const result = await this.selectUploadFile(data);
+      const result = await this.selectUploadFileO(data);
 
       this.isModal = true;
 
@@ -356,18 +357,13 @@ excelExport(data, options) {
         alert("업로드 파일명은 필수입니다.");
         return;
       }
-
-      if(this.ORDER_DATE === '') {
-        alert('입고예정일자는 필수입니다.');
-        return;
-      }
-
+      
       try {
 
         let date = this.ORDER_DATE.replaceAll('-', '');
         let file = this.FILE_NM;
 
-        window.open(`http://10.101.52.96:8090/inbOrderPrint/${date}/${file}`);
+        window.open(`http://10.101.52.96:8090/outOrderPrint/${date}/${file}`);
 
       } catch(error) {
           alert(`에러발생 : ${error}`);
@@ -426,13 +422,13 @@ excelExport(data, options) {
 
     async uploadMiddleWare(listMap) {
 
-      await this.insertUploadFile(listMap);
+      await this.insertUploadFileO(listMap);
       await this.doSearchValid();
     },
 
 
     doReset() {
-      this.$store.state.grid_inbOrder = [];
+      this.$store.state.grid_outOrder = [];
       this.search='';
       this.ORDER_DATE = new Date().toISOString().substr(0, 10);
       this.TRANS_STATUS_FILE = '';
@@ -442,7 +438,7 @@ excelExport(data, options) {
   },
 
   computed: {
-    ...mapGetters(['grid_inbOrder']),
+    ...mapGetters(['grid_outOrder']),
 
     uploadModal() {
       return this.isModal;

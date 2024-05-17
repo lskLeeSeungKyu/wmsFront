@@ -25,6 +25,30 @@ export const mutations = {
         }
         state.grid_inbInspectionDetail = payload;
     },
+    outOrderDataSet: (state, payload) => {
+        state.grid_outOrder = payload;
+    },
+    outOrderDataSet2: (state, payload) => {
+        state.grid_outEntry = payload;
+    },
+    outOrderDataSet3: (state, payload) => {
+        state.grid_outEntryDetail = payload;
+    },
+    OutInspectionDataSet: (state, payload) => {
+        state.grid_outInspection = payload;
+    },
+    OutInspectionDetailDataSet: (state, payload) => {
+
+        for(const item of payload) {
+            if(item['INSPECTION_YN'] === 'Y') {
+                item['SCAN_QTY'] = item['ORDER_QTY'];
+            }
+            else {
+                item['SCAN_QTY'] = '0';
+            }
+        }
+        state.grid_outInspectionDetail = payload;
+    },
     stockDataSet: (state, payload) => {
         state.grid_stock = payload;
     },

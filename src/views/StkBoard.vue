@@ -2,45 +2,22 @@
   <v-app>
     <v-container style="margin-left: 248px;"> 
     <v-row>
-      <v-col cols="2">
-        <v-select
+      <v-col cols="4">
+        <v-text-field
           outlined
-          v-model="CUST_CD"
-          label="고객사"
-          dense
-          :items="selectCustCd"
-          item-text="name"
-          item-value="value"
-        ></v-select>
-      </v-col>
-      <v-col cols="2">
-        <v-menu
-        v-model="menu"
-        :close-on-content-click="false"
-        :nudge-right="40"
-        transition="scale-transition"
-        offset-y
-      >
-        <template v-slot:activator="{ on }">
-          <v-text-field
-            outlined
-            v-model="ORDER_DATE"
-            label="입고예정일자"
-            dense
-            readonly
-            v-on="on"
-          ></v-text-field>
-        </template>
-        
-        <v-date-picker v-model="ORDER_DATE" @input="menu=false"></v-date-picker>
-      </v-menu>
+          ref="scan"
+          v-model="ITEM_CD"
+          label="상품코드 스캔"
+          hint="상품코드를 스캔하세요"
+          @keyup.enter="selectStock({ITEM_CD})"
+          >
+        </v-text-field>
       </v-col>
 
-      <v-col cols="2">
+      <v-col cols="3">
         <v-text-field outlined 
                       label="A-00-00-01" 
                       disabled
-                      dense
                       filled
                       style="max-width: 300px; font-weight: bold;"></v-text-field>
       </v-col>
@@ -54,7 +31,7 @@
       <v-btn @click="doReset" class="font-weight-bold" style="float: right;">초기화</v-btn>
       <v-btn @click="excelDownload" class="font-weight-bold" style="float: right; background-color: green; color: white;">다운로드</v-btn>
       <v-btn @click="doPrint" class="font-weight-bold" style="float: right; background-color: black; color: white;">출력</v-btn>
-      <v-btn @click="selectStock({ ORDER_DATE: ORDER_DATE.replaceAll('-', '') })" class="font-weight-bold" style="float: right;">조회</v-btn> 
+      <v-btn @click="selectStock({ITEM_CD})" class="font-weight-bold" style="float: right;">조회</v-btn> 
     </v-col>
     </v-row>
     <v-data-table :headers="headers"
@@ -83,6 +60,10 @@ import * as XLSX from 'xlsx';
 export default ({
   mixins: [SessionValid],
 
+  mounted() {
+    this.$refs.scan.focus();
+  },
+
   data() {
     return {
       headers: [
@@ -103,14 +84,7 @@ export default ({
         search: '',
         viewCount: 15,
         menu: false,
-        ORDER_DATE: new Date().toISOString().substr(0, 10),
-        CUST_CD: '',
-
-        selectCustCd: [
-          { name: '', value: '' },
-          { name: '카카오', value: '카카오' },
-          { name: '배민', value: '배민' },
-        ],
+        ITEM_CD: '',
 
         // excelDownload
         visibleHeadProps: [],
@@ -136,7 +110,7 @@ export default ({
   },
 
   methods: {
-    ...mapActions(['doSearch', 'sessionInfo', 'selectStock']),
+    ...mapActions(['sessionInfo', 'selectStock']),
 
 excelDownload() {
 
@@ -242,24 +216,22 @@ excelExport(data, options) {
   let wb = XLSX.utils.book_new();
 
   XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-  XLSX.writeFile(wb, `현재고_${this.ORDER_DATE}.xlsx`);
+  XLSX.writeFile(wb, `현재고.xlsx`);
 
 },
 
     doReset() {
       this.$store.state.grid_stock = [];
       this.search='';
-      this.ORDER_DATE = new Date().toISOString().substr(0, 10);
-      this.CUST_CD = '';
+      this.ITEM_CD = '';
+
+      this.$refs.scan.focus();
     },
 
     doPrint() {
       try {
 
-        let date = this.ORDER_DATE.replaceAll('-', '');
-        let file = '';
-
-        window.open(`http://39.115.244.28:8090/stockPrint/${date}/${file}`);
+        window.open(`http://10.101.52.96:8090/stockPrint`);
 
       } catch(error) {
           alert(`에러발생 : ${error}`);
