@@ -231,7 +231,7 @@ excelExport(data, options) {
     doPrint() {
       try {
 
-        window.open(`http://10.101.52.96:8090/stockPrint`);
+        window.open(`http://158.247.254.218:8090/stockPrint`);
 
       } catch(error) {
           alert(`에러발생 : ${error}`);

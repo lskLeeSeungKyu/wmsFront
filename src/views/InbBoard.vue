@@ -367,7 +367,7 @@ excelExport(data, options) {
         let date = this.ORDER_DATE.replaceAll('-', '');
         let file = this.FILE_NM;
 
-        window.open(`http://10.101.52.96:8090/inbOrderPrint/${date}/${file}`);
+        window.open(`http://158.247.254.218:8090/inbOrderPrint/${date}/${file}`);
 
       } catch(error) {
           alert(`에러발생 : ${error}`);

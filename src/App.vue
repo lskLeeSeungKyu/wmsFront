@@ -28,10 +28,16 @@ import { mapGetters } from 'vuex'
 
 export default {
 
+  mounted() {
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+
   methods: {
     loginUserInfo() {
       alert(this.$store.state.loginUser);
     },
+
+    // ...mapActions(['handleBeforeUnload']), //브라우저 창 닫힐때.
   },
 
   computed: {
