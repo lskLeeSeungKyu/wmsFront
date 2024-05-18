@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container style="margin-158.247.254.218: 248px;"> 
+    <v-container style="margin-left: 248px;"> 
     <v-row>
       <v-col cols="2">
         <v-select
@@ -363,7 +363,7 @@ excelExport(data, options) {
         let date = this.ORDER_DATE.replaceAll('-', '');
         let file = this.FILE_NM;
 
-        window.open(`http://39.115.244.28:8090/outOrderPrint/${date}/${file}`);
+        window.open(`http://158.247.254.218:8090/outOrderPrint/${date}/${file}`);
 
       } catch(error) {
           alert(`에러발생 : ${error}`);
