@@ -54,26 +54,28 @@ export default ({
             this.query = this.query.toUpperCase();
         },
 
-        async execute(query) {
-            await this.mainPageQuery(query);
+        async execute() {
+        //파라미터: query
+        alert('잠시 막아둔 기능입니다.');
+        //     await this.mainPageQuery(query);
 
-            if(this.headers.length !== 0) {
-                this.headers = [];
-            }
+        //     if(this.headers.length !== 0) {
+        //         this.headers = [];
+        //     }
 
-           for(const key in this.$store.state.grid_mainPage[0]) {
-              this.headers.push(
-                 { text: key, value: key }
-              );
-           }
+        //    for(const key in this.$store.state.grid_mainPage[0]) {
+        //       this.headers.push(
+        //          { text: key, value: key }
+        //       );
+        //    }
 
-           if(this.headers.length === 0) {
-              this.flag = false;
-           }
-           else {
-              this.hide = false;
-              this.flag = true;
-           }
+        //    if(this.headers.length === 0) {
+        //       this.flag = false;
+        //    }
+        //    else {
+        //       this.hide = false;
+        //       this.flag = true;
+        //    }
         },
 
         ...mapActions(['mainPageQuery', 'sessionInfo']),
