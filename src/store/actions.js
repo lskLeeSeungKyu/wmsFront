@@ -1,12 +1,11 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://158.247.254.218:8090'; 
-axios.defaults.withCredentials = true; //자격증명정보 (쿠키교환 가능 (jsessionid)) <CSR>
+// axios.defaults.baseURL = ''; 
+axios.defaults.withCredentials = true; //자격증명정보 (쿠키교환 가능) <CSR>
 
-// const instance = axios.create({
-//     baseURL: 'http://158.247.254.218:8090',
-//     //process.env.VUE_APP_API_URL
-// });
+const instance = axios.create({
+    baseURL: process.env.VUE_APP_API_URL,
+});
 
 
 
@@ -14,16 +13,14 @@ export const actions = {
 
     doSearch: async (context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('selectInbOrder', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectInbOrder', data);
+        const result = await instance.post('selectInbOrder', data);
         context.commit('dataSet', result.data);
         context.commit('isLoading');
     },
 
     outOrderDoSearch: async (context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('selectOutOrder', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectOutOrder', data);
+        const result = await instance.post('selectOutOrder', data);
         context.commit('outOrderDataSet', result.data);
         context.commit('isLoading');
     },
@@ -31,8 +28,7 @@ export const actions = {
 
     userSearch: async (context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('selectUser', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectUser', data);
+        const result = await instance.post('selectUser', data);
         context.commit('userDataSet', result.data);
         context.commit('isLoading');
     },
@@ -42,8 +38,7 @@ export const actions = {
         let multiLogin = false;
 
         context.commit('isLoading');
-        //let result = await instance.post('login.wms', data);
-        let result = await axios.post('http://158.247.254.218:8090/login.wms', data);
+        const result = await instance.post('login.wms', data);
         context.commit('isLoading');
 
         if(result.data === '') {
@@ -54,7 +49,7 @@ export const actions = {
         if(result.data['name'] === '중복') {
             if(confirm('이미 로그인되어 있습니다. 기존 접속을 끊으시겠습니까?')) {
 
-                const multiResult = await axios.post('http://158.247.254.218:8090/multiLogin.wms', data);
+                const multiResult = await instance.post('multiLogin.wms', data);
                 context.commit('sessionSet', multiResult.data);
 
                 multiLogin = true;
@@ -69,7 +64,7 @@ export const actions = {
             context.commit('sessionSet', result.data); //세션 상태관리
         }
 
-        const socket = await new WebSocket('ws://158.247.254.218:8090/websocket-endpoint');
+        const socket = await new WebSocket(`ws://${process.env.VUE_APP_LOCAL_URI}websocket-endpoint`);
 
         socket.onopen = function() {    
             
@@ -110,13 +105,9 @@ export const actions = {
         return 'success';
     },
 
-    // handleBeforeUnload: () => {
-    //     axios.post('http://158.247.254.218:8090/browserClose.wms');
-    // },
-
     refreshSocketConnect: async context => {
 
-        const socket = await new WebSocket('ws://158.247.254.218:8090/websocket-endpoint');
+        const socket = await new WebSocket(`ws://${process.env.VUE_APP_LOCAL_URI}websocket-endpoint`);
 
         socket.onopen = function() {    
             
@@ -156,16 +147,14 @@ export const actions = {
     },
 
     logoutHandler: async context => {
-        //await instance.post('logout.wms');
-        await axios.post('http://158.247.254.218:8090/logout.wms');
+        await instance.post('logout.wms');
         context.commit('isLogout', {});
     },
 
 
     userModify: async (context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('userModify', data)
-        let result = await axios.post('http://158.247.254.218:8090/userModify', data);
+        const result = await instance.post('userModify', data)
         context.commit('isLoading');
         
         if(result.data.result === 'success') {
@@ -181,10 +170,8 @@ export const actions = {
 
     userGenerate: async(context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('userGenerate', data);
-        let result = await axios.post('http://158.247.254.218:8090/userGenerate', data);
-        //let result2 = await instance.post('selectUser', data);
-        let result2 = await axios.post('http://158.247.254.218:8090/selectUser', data);
+        const result = await instance.post('userGenerate', data);
+        const result2 = await instance.post('selectUser', data);
         context.commit('userDataSet', result2.data);
         context.commit('isLoading');
 
@@ -197,8 +184,7 @@ export const actions = {
 
     userDelete: async(context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('userDelete', data);
-        let result = await axios.post('http://158.247.254.218:8090/userDelete', data);
+        const result = await instance.post('userDelete', data);
         context.commit('isLoading');
 
         if(result.data.result === 'fail') {
@@ -210,8 +196,7 @@ export const actions = {
 
     sessionInfo: async context => {
         context.commit('isLoading');
-        //let result = await instance.post('sessionInfo');
-        let result = await axios.post('http://158.247.254.218:8090/sessionInfo');
+        const result = await instance.post('sessionInfo');
         context.commit('isLoading');
         if(result.data !== '') {
           context.commit('sessionSet', result.data);
@@ -224,8 +209,7 @@ export const actions = {
 
     mainPageQuery: async (context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('mainPageQuery', data);
-        let result = await axios.post('http://158.247.254.218:8090/mainPageQuery', data);
+        const result = await instance.post('mainPageQuery', data);
         context.commit('isLoading');
         
         if(result.data['result'] === 'fail') {
@@ -239,8 +223,7 @@ export const actions = {
 
     selectUploadFile: async (context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('selectUploadFile', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectUploadFile', data);
+        const result = await instance.post('selectUploadFile', data);
         context.commit('isLoading');
 
         return result.data;
@@ -248,8 +231,7 @@ export const actions = {
 
     selectUploadFileO: async (context, data) => {
         context.commit('isLoading');
-        //let result = await instance.post('selectUploadFileO', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectUploadFileO', data);
+        const result = await instance.post('selectUploadFileO', data);
         context.commit('isLoading');
 
         return result.data;
@@ -257,54 +239,47 @@ export const actions = {
     
     selectInbOrderEntry: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectInbOrderEntry', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectInbOrderEntry', data);
+        const result = await instance.post('selectInbOrderEntry', data);
         context.commit('isLoading');
         context.commit('dataSet2', result.data);
     },
 
     selectOutOrderEntry: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectOutOrderEntry', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectOutOrderEntry', data);
+        const result = await instance.post('selectOutOrderEntry', data);
         context.commit('isLoading');
         context.commit('outOrderDataSet2', result.data);
     },
 
     selectInbOrderEntryDetail: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectInbOrderEntryDetail', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectInbOrderEntryDetail', data);
+        const result = await instance.post('selectInbOrderEntryDetail', data);
         context.commit('isLoading');
         context.commit('dataSet3', result.data);
     },
 
     selectOutOrderEntryDetail: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectOutOrderEntryDetail', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectOutOrderEntryDetail', data);
+        const result = await instance.post('selectOutOrderEntryDetail', data);
         context.commit('isLoading');
         context.commit('outOrderDataSet3', result.data);
     },
 
     insertUploadFile: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('insertUploadFile', data);
-        await axios.post('http://158.247.254.218:8090/insertUploadFile', data);
+        await instance.post('insertUploadFile', data);
         context.commit('isLoading');
     },
 
     insertUploadFileO: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('insertUploadFileO', data);
-        await axios.post('http://158.247.254.218:8090/insertUploadFileO', data);
+        await instance.post('insertUploadFileO', data);
         context.commit('isLoading');
     },
 
     inbGenerateU: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('inbGenerateU', data);
-        let result = await axios.post('http://158.247.254.218:8090/inbGenerateU', data);
+        const result = await instance.post('inbGenerateU', data);
         context.commit('isLoading');
 
         return result.data
@@ -312,8 +287,7 @@ export const actions = {
 
     outGenerateU: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('outGenerateU', data);
-        let result = await axios.post('http://158.247.254.218:8090/outGenerateU', data);
+        const result = await instance.post('outGenerateU', data);
         context.commit('isLoading');
 
         return result.data
@@ -321,15 +295,13 @@ export const actions = {
 
     doInbEntry: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('inbGenerateMD', data);
-        await axios.post('http://158.247.254.218:8090/inbGenerateMD', data);
+        await instance.post('inbGenerateMD', data);
         context.commit('isLoading');
     },
 
     doOutEntryValid: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('outGenerateMD', data);
-        const result = await axios.post('http://158.247.254.218:8090/outGenerateMDValid', data);
+        const result = await instance.post('outGenerateMD', data);
         context.commit('isLoading');
 
         return result.data;
@@ -337,82 +309,71 @@ export const actions = {
 
     doOutEntry: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('outGenerateMD', data);
-        await axios.post('http://158.247.254.218:8090/outGenerateMD', data);
+        await instance.post('outGenerateMD', data);
         context.commit('isLoading');
     },
     
     selectInbInspection: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectInbInspection', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectInbInspection', data);
+        const result = await instance.post('selectInbInspection', data);
         context.commit('isLoading');
         context.commit('InbInspectionDataSet', result.data);
     },
 
     selectOutInspection: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectOutInspection', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectOutInspection', data);
+        const result = await instance.post('selectOutInspection', data);
         context.commit('isLoading');
         context.commit('OutInspectionDataSet', result.data);
     },
     
     selectInbInspectionDetail: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectInbInspectionDetail', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectInbInspectionDetail', data);
+        const result = await instance.post('selectInbInspectionDetail', data);
         context.commit('isLoading');
         context.commit('InbInspectionDetailDataSet', result.data);
     },
 
     selectOutInspectionDetail: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectOutInspectionDetail', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectOutInspectionDetail', data);
+        const result = await instance.post('selectOutInspectionDetail', data);
         context.commit('isLoading');
         context.commit('OutInspectionDetailDataSet', result.data);
     },
     
     inbInspection: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('inbInspection', data);
-        await axios.post('http://158.247.254.218:8090/inbInspection', data);
+        await instance.post('inbInspection', data);
         context.commit('isLoading');
     },
 
     outInspection: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('outInspection', data);
-        await axios.post('http://158.247.254.218:8090/outInspection', data);
+        await instance.post('outInspection', data);
         context.commit('isLoading');
     },
 
     inbInspectionCancel: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('inbInspectionCancel', data);
-        await axios.post('http://158.247.254.218:8090/inbInspectionCancel', data);
+        await instance.post('inbInspectionCancel', data);
         context.commit('isLoading');
     },
     
     inbConfirm: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('inbConfirm', data);
-        await axios.post('http://158.247.254.218:8090/inbConfirm', data);
+        await instance.post('inbConfirm', data);
         context.commit('isLoading');
     },
 
     outConfirm: async (context, data) => {
         context.commit('isLoading');
-        //await instance.post('outConfirm', data);
-        await axios.post('http://158.247.254.218:8090/outConfirm', data);
+        await instance.post('outConfirm', data);
         context.commit('isLoading');
     },
 
     selectInbConfirmValid: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectInbConfirmValid', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectInbConfirmValid', data);
+        const result = await instance.post('selectInbConfirmValid', data);
         context.commit('isLoading');
         
         return result.data;
@@ -420,8 +381,7 @@ export const actions = {
 
     selectOutConfirmValid: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectOutConfirmValid', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectOutConfirmValid', data);
+        const result = await instance.post('selectOutConfirmValid', data);
         context.commit('isLoading');
         
         return result.data;
@@ -429,8 +389,7 @@ export const actions = {
 
     selectStock: async (context, data) => {
         context.commit('isLoading');
-        //const result = await instance.post('selectStock', data);
-        let result = await axios.post('http://158.247.254.218:8090/selectStock', data);
+        const result = await instance.post('selectStock', data);
         context.commit('isLoading');
         
         context.commit('stockDataSet', result.data);

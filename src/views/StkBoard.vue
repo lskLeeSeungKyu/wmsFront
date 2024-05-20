@@ -231,7 +231,7 @@ excelExport(data, options) {
     doPrint() {
       try {
 
-        window.open(`http://158.247.254.218:8090/stockPrint`);
+        window.open(`${process.env.VUE_APP_API_URL}stockPrint`);
 
       } catch(error) {
           alert(`에러발생 : ${error}`);
