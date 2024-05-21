@@ -1,0 +1,16 @@
+module.exports = {
+  devServer: {
+    port: 8081, // 원하는 포트 번호로 설정
+    host: "0.0.0.0", // 모든 네트워크 인터페이스에서 접속 가능
+    allowedHosts: "all",
+    open: true,
+    client: {
+      overlay: {
+        warnings: true,
+        errors: true
+      },
+      webSocketURL: "ws://158.247.198.42:80/websocket-endpoint" // 웹소켓용 URL 지정
+    },
+    compress: true
+  }
+};
